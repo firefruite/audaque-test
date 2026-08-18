@@ -47,10 +47,26 @@ cmake --build .
 ctest --output-on-failure
 ```
 
-### 4. 运行服务
+### 运行服务
 
 ```bash
 ./build/yolo_server --model models/yolo11n.onnx --labels assets/coco80.txt --port 8080
+```
+
+### 健康检查
+
+```bash
+curl -s http://localhost:8080/health | python3 -m json.tool
+```
+
+预期输出：
+
+```json
+{
+  "status": "ok",
+  "model_name": "yolo11n",
+  "model_loaded": true
+}
 ```
 
 ## API 接口
@@ -73,7 +89,14 @@ ctest --output-on-failure
 - `confidence`：置信度阈值，默认 `0.25`，范围 `[0, 1]`
 - `iou`：NMS IoU 阈值，默认 `0.45`，范围 `[0, 1]`
 
-响应示例：
+示例请求（使用项目中 `samples/bus.jpg`）：
+
+```bash
+curl -s -X POST -F "images=@samples/bus.jpg" "http://localhost:8080/v1/infer/batch?confidence=0.25&iou=0.45" | python3 -m json.tool
+```
+
+响应示例（`samples/bus.jpg` 实际推理结果）：
+
 ```json
 {
   "model_name": "yolo11n",
@@ -81,19 +104,63 @@ ctest --output-on-failure
   "iou_threshold": 0.45,
   "results": [
     {
-      "filename": "street.jpg",
+      "filename": "bus.jpg",
       "status": "success",
-      "inference_ms": 38.5,
+      "inference_ms": 82.5,
       "detections": [
+        {
+          "class_id": 5,
+          "class_name": "bus",
+          "confidence": 0.9392,
+          "bbox": {
+            "x": 11.92,
+            "y": 228.39,
+            "width": 787.31,
+            "height": 506.82
+          }
+        },
         {
           "class_id": 0,
           "class_name": "person",
-          "confidence": 0.93,
+          "confidence": 0.9020,
           "bbox": {
-            "x": 120.5,
-            "y": 88.2,
-            "width": 95.1,
-            "height": 240.7
+            "x": 48.59,
+            "y": 397.96,
+            "width": 194.62,
+            "height": 506.58
+          }
+        },
+        {
+          "class_id": 0,
+          "class_name": "person",
+          "confidence": 0.8493,
+          "bbox": {
+            "x": 670.56,
+            "y": 392.59,
+            "width": 139.45,
+            "height": 487.03
+          }
+        },
+        {
+          "class_id": 0,
+          "class_name": "person",
+          "confidence": 0.8328,
+          "bbox": {
+            "x": 223.12,
+            "y": 405.58,
+            "width": 122.11,
+            "height": 454.14
+          }
+        },
+        {
+          "class_id": 0,
+          "class_name": "person",
+          "confidence": 0.3993,
+          "bbox": {
+            "x": -0.06,
+            "y": 550.19,
+            "width": 66.06,
+            "height": 321.59
           }
         }
       ]
