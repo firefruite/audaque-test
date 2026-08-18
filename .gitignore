@@ -1,5 +1,4 @@
 /build/
-/models/*.onnx
 !.gitkeep
 /:memory:.ses
 .DS_Store
