@@ -53,25 +53,13 @@ ctest --output-on-failure
 ./build/yolo_server --model models/yolo11n.onnx --labels assets/coco80.txt --port 8080
 ```
 
-### 健康检查
+## API 接口
+
+### GET /health
 
 ```bash
 curl -s http://localhost:8080/health | python3 -m json.tool
 ```
-
-预期输出：
-
-```json
-{
-  "status": "ok",
-  "model_name": "yolo11n",
-  "model_loaded": true
-}
-```
-
-## API 接口
-
-### GET /health
 
 ```json
 {
